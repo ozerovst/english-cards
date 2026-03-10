@@ -9,18 +9,23 @@
 
 <style>
 
+*{
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
+}
+
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial;
 background:#020617;
-color:white;
-height:100vh;
+color:#e2e8f0;
 display:flex;
 flex-direction:column;
+height:100vh;
 }
 
 header{
-padding:16px;
+padding:18px;
 border-bottom:1px solid #1e293b;
 display:flex;
 justify-content:space-between;
@@ -28,8 +33,9 @@ align-items:center;
 }
 
 h1{
-font-size:18px;
 margin:0;
+font-size:18px;
+font-weight:700;
 }
 
 #progress{
@@ -42,56 +48,28 @@ flex:1;
 display:flex;
 justify-content:center;
 align-items:center;
-padding:20px;
+padding:24px;
 }
 
 .card{
 width:100%;
 max-width:420px;
-height:320px;
-perspective:1000px;
-}
-
-.inner{
-width:100%;
-height:100%;
-position:relative;
-transform-style:preserve-3d;
-transition:transform .4s;
-}
-
-.flipped{
-transform:rotateY(180deg);
-}
-
-.face{
-position:absolute;
-width:100%;
-height:100%;
-display:flex;
-justify-content:center;
-align-items:center;
-text-align:center;
-padding:24px;
-box-sizing:border-box;
-border-radius:20px;
-backface-visibility:hidden;
-border:1px solid #1e293b;
-}
-
-.front{
+height:280px;
 background:#0f172a;
-font-size:26px;
-}
-
-.back{
-background:#2563eb;
-font-size:22px;
-transform:rotateY(180deg);
+border-radius:22px;
+border:1px solid #1e293b;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+padding:30px;
+font-size:24px;
+line-height:1.4;
+cursor:pointer;
 }
 
 footer{
-padding:16px;
+padding:18px;
 border-top:1px solid #1e293b;
 display:flex;
 gap:10px;
@@ -99,30 +77,40 @@ gap:10px;
 
 button{
 flex:1;
-padding:14px;
-background:#1e293b;
-color:white;
 border:none;
-border-radius:10px;
-font-size:14px;
+background:#1e293b;
+color:#e2e8f0;
+padding:14px;
+border-radius:12px;
+font-size:15px;
 }
 
-.primary{
+button.primary{
 background:#2563eb;
+color:white;
 }
 
 .quiz{
+display:none;
 width:100%;
 max-width:420px;
-display:none;
 flex-direction:column;
 gap:10px;
+}
+
+.question{
+background:#0f172a;
+border:1px solid #1e293b;
+border-radius:18px;
+padding:22px;
+text-align:center;
+font-size:20px;
 }
 
 .option{
 padding:14px;
 border:1px solid #1e293b;
-border-radius:10px;
+border-radius:12px;
 background:#0f172a;
 }
 
@@ -150,21 +138,11 @@ background:#dc2626;
 
 <main>
 
-<div id="cardsView" class="card">
-
-<div id="cardInner" class="inner">
-
-<div id="front" class="face front"></div>
-
-<div id="back" class="face back"></div>
-
-</div>
-
-</div>
+<div id="cardsView" class="card"></div>
 
 <div id="quizView" class="quiz">
 
-<div id="quizQuestion" class="face front"></div>
+<div id="quizQuestion" class="question"></div>
 
 <div id="quizOptions"></div>
 
@@ -175,11 +153,8 @@ background:#dc2626;
 <footer>
 
 <button id="prev">Prev</button>
-
 <button id="flip" class="primary">Flip</button>
-
 <button id="next">Next</button>
-
 <button id="mode">Quiz</button>
 
 </footer>
@@ -189,7 +164,8 @@ background:#dc2626;
 const phrases=[
 
 {en:"I search for good restaurants.",ru:"Я ищу хорошие рестораны."},
-{en:"I look for a cafe.",ru:"Я ищу кафе."},
+{en:"I search for a good cafe.",ru:"Я ищу хорошее кафе."},
+{en:"I search for a hotel.",ru:"Я ищу отель."},
 {en:"I look for a quiet place.",ru:"Я ищу тихое место."},
 {en:"I look for a taxi.",ru:"Я ищу такси."},
 {en:"I look for a pharmacy.",ru:"Я ищу аптеку."},
@@ -198,17 +174,17 @@ const phrases=[
 {en:"It depends on the price.",ru:"Это зависит от цены."},
 {en:"It depends on the situation.",ru:"Это зависит от ситуации."},
 {en:"It depends on the country.",ru:"Это зависит от страны."},
-{en:"It depends on the time.",ru:"Это зависит от времени."},
 
 {en:"I have forgotten my passport.",ru:"Я забыл паспорт."},
 {en:"I have forgotten the address.",ru:"Я забыл адрес."},
-{en:"I have forgotten the password.",ru:"Я забыл пароль."},
+{en:"I have forgotten my password.",ru:"Я забыл пароль."},
 
 {en:"I open Google Maps and search for a cafe.",ru:"Я открываю Google Maps и ищу кафе."},
 {en:"I open the app and look for restaurants.",ru:"Я открываю приложение и ищу рестораны."},
 
 {en:"I am looking for my keys.",ru:"Я ищу свои ключи."},
 {en:"I am looking for a place to stay.",ru:"Я ищу место где остановиться."},
+{en:"I am looking for a restaurant.",ru:"Я ищу ресторан."},
 
 {en:"I am waiting for the taxi.",ru:"Я жду такси."},
 {en:"I am waiting for the bus.",ru:"Я жду автобус."},
@@ -235,124 +211,133 @@ const phrases=[
 {en:"I return to the hotel.",ru:"Я возвращаюсь в отель."},
 {en:"I return to the office.",ru:"Я возвращаюсь в офис."}
 
-]
+];
 
-function shuffle(a){
-for(let i=a.length-1;i>0;i--){
-let j=Math.floor(Math.random()*(i+1))
-[a[i],a[j]]=[a[j],a[i]]
-}
-return a
-}
+let index=Number(localStorage.getItem("cardIndex"))||0;
+let flipped=false;
+let quiz=false;
 
-let data=shuffle([...phrases])
-
-let index=Number(localStorage.getItem("cardIndex"))||0
-
-const front=document.getElementById("front")
-const back=document.getElementById("back")
-const progress=document.getElementById("progress")
-const inner=document.getElementById("cardInner")
+const card=document.getElementById("cardsView");
+const progress=document.getElementById("progress");
 
 function renderCard(){
 
-let p=data[index]
+let p=phrases[index];
 
-front.textContent=p.en
-back.textContent=p.ru
+progress.textContent=(index+1)+" / "+phrases.length;
 
-progress.textContent=(index+1)+" / "+data.length
-
-inner.classList.remove("flipped")
-
-localStorage.setItem("cardIndex",index)
+card.textContent=flipped?p.ru:p.en;
 
 }
 
-renderCard()
+renderCard();
 
-flip.onclick=()=>inner.classList.toggle("flipped")
+document.getElementById("flip").onclick=function(){
 
-next.onclick=()=>{
-index=(index+1)%data.length
-renderCard()
-}
+flipped=!flipped;
+renderCard();
 
-prev.onclick=()=>{
-index=(index-1+data.length)%data.length
-renderCard()
-}
+};
 
-let quiz=false
+document.getElementById("next").onclick=function(){
 
-mode.onclick=()=>{
+index=(index+1)%phrases.length;
+flipped=false;
+localStorage.setItem("cardIndex",index);
+renderCard();
 
-quiz=!quiz
+};
+
+document.getElementById("prev").onclick=function(){
+
+index=(index-1+phrases.length)%phrases.length;
+flipped=false;
+localStorage.setItem("cardIndex",index);
+renderCard();
+
+};
+
+document.getElementById("mode").onclick=function(){
+
+quiz=!quiz;
 
 if(quiz){
 
-mode.textContent="Cards"
+this.textContent="Cards";
+card.style.display="none";
+document.getElementById("quizView").style.display="flex";
+nextQuiz();
 
-cardsView.style.display="none"
-quizView.style.display="flex"
+}else{
 
-nextQuestion()
-
-}
-
-else{
-
-mode.textContent="Quiz"
-
-cardsView.style.display="block"
-quizView.style.display="none"
-
-renderCard()
+this.textContent="Quiz";
+card.style.display="flex";
+document.getElementById("quizView").style.display="none";
+renderCard();
 
 }
 
+};
+
+function shuffle(a){
+
+for(let i=a.length-1;i>0;i--){
+
+let j=Math.floor(Math.random()*(i+1));
+
+[a[i],a[j]]=[a[j],a[i]];
+
 }
 
-function nextQuestion(){
+return a;
 
-let q=data[index]
+}
 
-quizQuestion.textContent=q.ru
+function nextQuiz(){
 
-let options=shuffle([
-q,
-...shuffle(data.filter(p=>p.en!==q.en)).slice(0,3)
-])
+let q=phrases[index];
 
-quizOptions.innerHTML=""
+document.getElementById("quizQuestion").textContent=q.ru;
 
-options.forEach(o=>{
+let opts=shuffle([q,...shuffle(phrases.filter(p=>p.en!==q.en)).slice(0,3)]);
 
-let btn=document.createElement("div")
+let container=document.getElementById("quizOptions");
 
-btn.className="option"
+container.innerHTML="";
 
-btn.textContent=o.en
+opts.forEach(o=>{
 
-btn.onclick=()=>{
+let btn=document.createElement("div");
+
+btn.className="option";
+
+btn.textContent=o.en;
+
+btn.onclick=function(){
 
 if(o.en===q.en){
-btn.classList.add("correct")
-}
-else{
-btn.classList.add("wrong")
-}
 
-setTimeout(()=>{
-index=(index+1)%data.length
-nextQuestion()
-},700)
+btn.classList.add("correct");
+
+}else{
+
+btn.classList.add("wrong");
 
 }
 
-quizOptions.appendChild(btn)
+setTimeout(function(){
 
-})
+index=(index+1)%phrases.length;
+
+nextQuiz();
+
+},700);
+
+};
+
+container.appendChild(btn);
+
+});
 
 }
 
